@@ -1,0 +1,5 @@
+pandas
+numpy
+statsmodels
+mcp
+# Only needed for the Claude API backend:  pip install anthropic

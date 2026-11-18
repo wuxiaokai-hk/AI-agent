@@ -14,7 +14,7 @@ picking one up later is easy.
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-python data/make_data.py                    # creates data/credit_unions.csv
+python data/make_data.py                    # creates data/lenders.csv
 python lessons/07_evals.py --offline        # sanity check, no model needed
 ```
 

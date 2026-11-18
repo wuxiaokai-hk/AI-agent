@@ -41,7 +41,7 @@ async def main(question: str | None):
 
         if question is None:                      # --list mode: call one tool directly
             res = await session.call_tool("query_data", {"columns": ["delinquency_rate"],
-                                                         "group_by": "cu_id", "agg": "mean"})
+                                                         "group_by": "lender_id", "agg": "mean"})
             print(result_text(res)[:500])
             return
 
@@ -65,6 +65,6 @@ async def main(question: str | None):
 
 if __name__ == "__main__":
     q = None if "--list" in sys.argv else (
-        "Which three credit unions had the highest average delinquency in 2024, and how does "
-        "delinquency respond to unemployment once CU fixed effects are included?")
+        "Which three lenders had the highest average delinquency in 2024, and how does "
+        "delinquency respond to unemployment once lender fixed effects are included?")
     asyncio.run(main(q))

@@ -92,9 +92,9 @@ if __name__ == "__main__":
     )
     msgs: list[dict] = []
     turns = [
-        "Hi. FYI I always want rate effects in basis points and I report to the Ontario credit-union team.",
-        "What was the average delinquency rate across all credit unions in 2020 vs 2019?",
-        "Which credit union had the highest average delinquency in 2023?",
+        "Hi. FYI I always want rate effects in basis points and I report to the retail credit team.",
+        "What was the average delinquency rate across all lenders in 2020 vs 2019?",
+        "Which lender had the highest average delinquency in 2023?",
         "Remind me: what were the two numbers from my first data question?",
     ]
     for i, t in enumerate(turns):

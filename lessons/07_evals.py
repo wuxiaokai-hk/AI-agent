@@ -32,7 +32,7 @@ def test_tools():
     from data.make_data import TRUE_BETA  # the known data-generating process
     for k in ("unemployment", "policy_rate", "hpi_yoy"):
         assert abs(r["coef"][k] - TRUE_BETA[k]) < 0.03, (k, r["coef"][k])
-    assert dt.query_data.fn(["loans_bn"], where="cu_id == 'CU01'")["n_rows"] == 44
+    assert dt.query_data.fn(["loans_bn"], where="lender_id == 'L01'")["n_rows"] == 44
     try:
         dt.scenario_delinquency.fn({"const": 1, "unemployment": 0.2}, {})
         raise AssertionError("should have raised")
@@ -47,17 +47,17 @@ def truth_mean(where):
 
 
 CASES = [
-    dict(q="What was the average delinquency rate across all credit unions in 2020? Give the number to 3 decimals.",
+    dict(q="What was the average delinquency rate across all lenders in 2020? Give the number to 3 decimals.",
          expect=truth_mean("quarter.str.startswith('2020')"), tol=0.01, tools={"query_data"}),
-    dict(q="Which credit union had the highest average delinquency rate over the whole sample? Answer with its id.",
-         expect_text=df.groupby("cu_id").delinquency_rate.mean().idxmax(), tools={"query_data"}),
-    dict(q="Regress delinquency_rate on unemployment, policy_rate and hpi_yoy with credit-union fixed "
+    dict(q="Which lender had the highest average delinquency rate over the whole sample? Answer with its id.",
+         expect_text=df.groupby("lender_id").delinquency_rate.mean().idxmax(), tools={"query_data"}),
+    dict(q="Regress delinquency_rate on unemployment, policy_rate and hpi_yoy with lender fixed "
            "effects. What is the unemployment coefficient (3 decimals)?",
          expect=dt.run_regression.fn("delinquency_rate", ["unemployment", "policy_rate", "hpi_yoy"],
                                      entity_fe=True)["coef"]["unemployment"], tol=0.002, tools={"run_regression"}),
-    dict(q="How many credit unions are in the dataset?", expect=df.cu_id.nunique(), tol=0, tools=set()),
-    dict(q="What was CU05's delinquency rate in 2025Q4?",
-         expect=float(df.query("cu_id=='CU05' and quarter=='2025Q4'").delinquency_rate.iloc[0]), tol=0.001,
+    dict(q="How many lenders are in the dataset?", expect=df.lender_id.nunique(), tol=0, tools=set()),
+    dict(q="What was L05's delinquency rate in 2025Q4?",
+         expect=float(df.query("lender_id=='L05' and quarter=='2025Q4'").delinquency_rate.iloc[0]), tol=0.001,
          tools={"query_data"}),
     # Adversarial: the data doesn't contain this. Correct behaviour = say so, not invent.
     dict(q="What was the delinquency rate for credit cards specifically in 2024?",
@@ -80,7 +80,7 @@ def grade(case, answer: str) -> bool:
 
 def run_evals(trials: int = 1):
     from agentlab.core import Agent
-    system = ("You are a credit-risk analyst with a credit-union panel. Use tools; never invent "
+    system = ("You are a credit-risk analyst with a lender panel. Use tools; never invent "
               "numbers. If the data can't answer, say so plainly.")
     rows = []
     for i, case in enumerate(CASES):

@@ -24,7 +24,7 @@ from agentlab.core import Agent  # noqa: E402
 from agentlab.data_tools import READ_ONLY  # noqa: E402
 
 TASK = ("Write a one-page note for a supervisor: did the 2022-23 rate-hiking cycle raise "
-        "credit-union delinquency, controlling for unemployment and house prices? "
+        "lender delinquency, controlling for unemployment and house prices? "
         "Include magnitude, uncertainty and a robustness check.")
 
 CHECKLIST = """1. Every number is traceable to an analysis step (no invented figures).

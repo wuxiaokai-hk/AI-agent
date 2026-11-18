@@ -1,6 +1,6 @@
-"""Generate a synthetic quarterly panel of Ontario-style credit unions.
+"""Generate a synthetic quarterly panel of small retail lenders.
 
-Columns: cu_id, quarter, loans_bn, delinquency_rate (%), unemployment (%),
+Columns: lender_id, quarter, loans_bn, delinquency_rate (%), unemployment (%),
 policy_rate (%), hpi_yoy (%), mortgage_share.
 
 The data-generating process is known, so the evals in lesson 07 can check
@@ -19,7 +19,7 @@ def make(seed: int = 7) -> pd.DataFrame:
     quarters = pd.period_range("2015Q1", "2025Q4", freq="Q")
     n_q = len(quarters)
 
-    # Macro block (common to all credit unions)
+    # Macro block (common to all lenders)
     unemp = 6.5 + np.cumsum(rng.normal(0, 0.25, n_q))
     unemp[21:25] += np.array([5.0, 3.5, 2.0, 1.0])  # 2020 shock
     policy = np.clip(1.0 + np.cumsum(rng.normal(0, 0.2, n_q)), 0.25, 5.0)
@@ -38,7 +38,7 @@ def make(seed: int = 7) -> pd.DataFrame:
                   + TRUE_BETA["hpi_yoy"] * hpi[t]
                   + rng.normal(0, 0.08))
             rows.append({
-                "cu_id": f"CU{cu:02d}", "quarter": str(q),
+                "lender_id": f"L{cu:02d}", "quarter": str(q),
                 "loans_bn": round(size * (1.012 ** t), 3),
                 "delinquency_rate": round(max(dq, 0.05), 3),
                 "unemployment": round(unemp[t], 2),
@@ -50,7 +50,7 @@ def make(seed: int = 7) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    out = Path(__file__).parent / "credit_unions.csv"
+    out = Path(__file__).parent / "lenders.csv"
     df = make()
     df.to_csv(out, index=False)
     print(f"wrote {out} ({len(df)} rows)")

@@ -1,4 +1,4 @@
-"""Analyst tools over the credit-union panel. Pure Python: you can unit-test them
+"""Analyst tools over the lender panel. Pure Python: you can unit-test them
 without any LLM (see tests in lesson 07). Good agents start with good tools."""
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import statsmodels.api as sm
 
 from .core import tool
 
-DATA = Path(__file__).resolve().parent.parent / "data" / "credit_unions.csv"
+DATA = Path(__file__).resolve().parent.parent / "data" / "lenders.csv"
 OUT = Path(__file__).resolve().parent.parent / "outputs"
 
 
@@ -22,21 +22,21 @@ def load() -> pd.DataFrame:
 
 @tool("describe_dataset",
       "Return the columns, dtypes, row count, date range and summary statistics of the "
-      "credit-union panel. Call this first before any analysis.",
+      "lender panel. Call this first before any analysis.",
       {})
 def describe_dataset():
     df = load()
     return {
         "rows": len(df), "columns": dict(df.dtypes.astype(str)),
         "quarters": [df.quarter.min(), df.quarter.max()],
-        "n_credit_unions": df.cu_id.nunique(),
+        "n_lenders": df.lender_id.nunique(),
         "summary": df.describe().round(3).to_dict(),
     }
 
 
 @tool("query_data",
       "Filter and aggregate the panel with a pandas query. `where` is a pandas .query() "
-      "string (e.g. \"cu_id == 'CU03' and quarter >= '2020Q1'\") or empty. `group_by` is "
+      "string (e.g. \"lender_id == 'L03' and quarter >= '2020Q1'\") or empty. `group_by` is "
       "a column or empty. `agg` is mean|sum|median|max|min. Returns at most 60 rows.",
       {"where": {"type": "string"}, "columns": {"type": "array", "items": {"type": "string"}},
        "group_by": {"type": "string"}, "agg": {"type": "string", "enum": ["mean", "sum", "median", "max", "min"]}},
@@ -54,8 +54,8 @@ def query_data(columns, where="", group_by="", agg="mean"):
 
 @tool("run_regression",
       "OLS of `y` on `x` columns over the panel (optionally filtered by `where`). "
-      "Set entity_fe=true for credit-union fixed effects. Returns coefficients, std errors "
-      "(clustered by cu_id), R-squared and N.",
+      "Set entity_fe=true for lender fixed effects. Returns coefficients, std errors "
+      "(clustered by lender_id), R-squared and N.",
       {"y": {"type": "string"}, "x": {"type": "array", "items": {"type": "string"}},
        "where": {"type": "string"}, "entity_fe": {"type": "boolean"}},
       required=["y", "x"])
@@ -65,9 +65,9 @@ def run_regression(y, x, where="", entity_fe=False):
         df = df.query(where)
     X = df[x].copy()
     if entity_fe:
-        X = pd.concat([X, pd.get_dummies(df.cu_id, prefix="fe", drop_first=True, dtype=float)], axis=1)
+        X = pd.concat([X, pd.get_dummies(df.lender_id, prefix="fe", drop_first=True, dtype=float)], axis=1)
     X = sm.add_constant(X)
-    res = sm.OLS(df[y], X).fit(cov_type="cluster", cov_kwds={"groups": df.cu_id.astype("category").cat.codes})
+    res = sm.OLS(df[y], X).fit(cov_type="cluster", cov_kwds={"groups": df.lender_id.astype("category").cat.codes})
     keep = ["const"] + list(x)
     return {
         "coef": res.params[keep].round(4).to_dict(),

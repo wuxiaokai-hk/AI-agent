@@ -21,11 +21,11 @@ from agentlab.data_tools import READ_ONLY  # noqa: E402
 
 SPECIALISTS = {
     "data_analyst": dict(
-        system="You pull descriptive statistics from the credit-union panel. Report exact numbers "
+        system="You pull descriptive statistics from the lender panel. Report exact numbers "
                "in a compact table. Do not run regressions.",
         tools=[t for t in READ_ONLY if t.name in ("describe_dataset", "query_data")]),
     "econometrician": dict(
-        system="You estimate and interpret regressions on the credit-union panel and compute "
+        system="You estimate and interpret regressions on the lender panel and compute "
                "scenario implications. Report coefficients with standard errors.",
         tools=READ_ONLY),
     "reviewer": dict(
@@ -57,7 +57,7 @@ reviewer, address the most important issues, then give the final answer."""
 
 if __name__ == "__main__":
     boss = Agent(system=ORCHESTRATOR, tools=[delegate], name="orchestrator", max_steps=15)
-    final = boss.run("Brief me on credit-union delinquency risk: how it evolved 2019-2025, its "
+    final = boss.run("Brief me on lender delinquency risk: how it evolved 2019-2025, its "
                      "macro drivers, and what an adverse scenario (unemployment 9.5%, policy rate "
                      "4.5%, HPI -10%) would imply.")
     print("\n================ FINAL ================\n", final)

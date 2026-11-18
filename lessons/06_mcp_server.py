@@ -9,14 +9,14 @@ Run standalone (it waits for a client on stdin/stdout - that's normal):
     python lessons/06_mcp_server.py
 
 Use it from Claude Desktop: Settings -> Developer -> Edit Config, add:
-    {"mcpServers": {"credit-unions": {
+    {"mcpServers": {"lenders": {
         "command": "/ABSOLUTE/PATH/TO/python",
         "args": ["/ABSOLUTE/PATH/TO/agent-lab/lessons/06_mcp_server.py"]}}}
-Restart Claude Desktop and ask: "Using the credit-unions tools, which CU had the highest
+Restart Claude Desktop and ask: "Using the lenders tools, which lender had the highest
 delinquency in 2024?"
 
 Use it from Claude Code:
-    claude mcp add credit-unions -- python /ABSOLUTE/PATH/lessons/06_mcp_server.py
+    claude mcp add lenders -- python /ABSOLUTE/PATH/lessons/06_mcp_server.py
 """
 import sys
 from pathlib import Path
@@ -29,7 +29,7 @@ try:                                    # mcp >= 2.0
 except ImportError:                     # mcp 1.x
     from mcp.server.fastmcp import FastMCP as Server
 
-server = Server("credit-unions")
+server = Server("lenders")
 
 
 # With MCP, the schema is inferred from type hints + docstring. Same tools as before,
@@ -37,7 +37,7 @@ server = Server("credit-unions")
 
 @server.tool()
 def describe_dataset() -> dict:
-    """Columns, row count, date range and summary stats of the credit-union panel. Call first."""
+    """Columns, row count, date range and summary stats of the lender panel. Call first."""
     return dt.describe_dataset.fn()
 
 
@@ -50,14 +50,14 @@ def query_data(columns: list[str], where: str = "", group_by: str = "", agg: str
 
 @server.tool()
 def run_regression(y: str, x: list[str], where: str = "", entity_fe: bool = False) -> dict:
-    """OLS of y on x with SEs clustered by credit union; entity_fe adds CU fixed effects."""
+    """OLS of y on x with SEs clustered by lender; entity_fe adds lender fixed effects."""
     return dt.run_regression.fn(y, x, where, entity_fe)
 
 
 @server.resource("panel://schema")
 def schema() -> str:
     """Resources are read-only context the client can attach (vs tools, which the model calls)."""
-    return "cu_id, quarter, loans_bn, delinquency_rate(%), unemployment(%), policy_rate(%), hpi_yoy(%), mortgage_share"
+    return "lender_id, quarter, loans_bn, delinquency_rate(%), unemployment(%), policy_rate(%), hpi_yoy(%), mortgage_share"
 
 
 if __name__ == "__main__":

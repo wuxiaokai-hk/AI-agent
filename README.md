@@ -113,3 +113,7 @@ Each file ends with **exercises**. Doing them is where most of the learning happ
 - Anthropic, *Building effective agents* (workflows vs agents, the core patterns)
 - Anthropic docs: Tool use; Model Context Protocol (modelcontextprotocol.io)
 - Anthropic, *Writing effective tools for agents*
+
+## License
+
+MIT, see [LICENSE](LICENSE). Free to use, change and share. Data downloaded from public sources stay under their providers' terms. Independent open-source project, not affiliated with or endorsed by any employer, regulator or data vendor.
